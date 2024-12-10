@@ -33,6 +33,26 @@ func newLocation(landing string, lat, long coordinate) location {
 	return location{landing, lat.decimal(), long.decimal()}
 }
 
+func rad(deg float64) float64 {
+	return deg * math.Pi / 180
+}
+
+func (w world) distance(p1, p2 location) (string, string, float64) {
+	s1, c1 := math.Sincos(rad(p1.lat))
+	s2, c2 := math.Sincos(rad(p2.lat))
+	clong := math.Cos(rad(p1.long - p2.long))
+
+	return p1.landing, p2.landing, w.radius * math.Acos(s1*s2+c1*c2*clong)
+	// fmt.Printf("Ditance between %s and %s is %f",
+	// p1.landing, p2.landing, w.radius * math.Acos(s1*s2+c1*c2*clong))
+}
+
+func (w world) prinDistance(pointFirst, pointSecond string, distance float64) {
+	fmt.Println()
+	fmt.Printf("Ditance between %s and %s is %f ed.\n", pointFirst, pointSecond, distance)
+	fmt.Println()
+}
+
 func main() {
 	spirit := newLocation("Colambia Memorial Station",
 		coordinate{14, 34, 6.2, 'S'}, coordinate{175, 28, 21.5, 'E'})
@@ -52,4 +72,12 @@ func main() {
 		fmt.Println()
 		fmt.Println(a[i])
 	}
+
+	mars := world{3389.5}
+	mars.prinDistance(mars.distance(spirit, oportunity))
+	mars.prinDistance(mars.distance(spirit, curiosity))
+	mars.prinDistance(mars.distance(spirit, inSight))
+	mars.prinDistance(mars.distance(oportunity, curiosity))
+	mars.prinDistance(mars.distance(oportunity, inSight))
+	mars.prinDistance(mars.distance(curiosity, inSight))
 }
